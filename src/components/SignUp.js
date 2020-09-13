@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -30,8 +30,22 @@ const useStyles = makeStyles((theme) => ({
    },
 }));
 
-export default function SignUp() {
+const SignUp = () => {
    const classes = useStyles();
+   const [form, setForm] = useState({
+      name: "",
+      username: "",
+      password: "",
+   });
+
+   const changeHandler = (e) => {
+      console.log(e.target.name, e.target.value);
+      setForm({ ...form, [e.target.name]: e.target.value });
+   };
+
+   const submitHandler = (e) => {
+      e.preventDefault();
+   };
 
    return (
       <div className={classes.paper}>
@@ -39,9 +53,9 @@ export default function SignUp() {
             <LockOutlinedIcon />
          </Avatar>
          <Typography component="h1" variant="h5">
-            Зарегестрироваться
+            Регистрация
          </Typography>
-         <form className={classes.form} noValidate>
+         <form className={classes.form} noValidate onSubmit={submitHandler}>
             <Grid container spacing={2}>
                <Grid item xs={12} sm={6}>
                   <TextField
@@ -53,6 +67,8 @@ export default function SignUp() {
                      id="name"
                      label="Name"
                      autoFocus
+                     value={form.name}
+                     onChange={changeHandler}
                   />
                </Grid>
                <Grid item xs={12} sm={6}>
@@ -64,6 +80,8 @@ export default function SignUp() {
                      label="Username"
                      name="username"
                      autoComplete="username"
+                     value={form.username}
+                     onChange={changeHandler}
                   />
                </Grid>
                <Grid item xs={12}>
@@ -76,6 +94,8 @@ export default function SignUp() {
                      type="password"
                      id="password"
                      autoComplete="current-password"
+                     value={form.password}
+                     onChange={changeHandler}
                   />
                </Grid>
             </Grid>
@@ -91,4 +111,6 @@ export default function SignUp() {
          </form>
       </div>
    );
-}
+};
+
+export default SignUp;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -7,6 +7,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
+import { fetchLogin } from "../store/actions/login";
 
 const useStyles = makeStyles((theme) => ({
    paper: {
@@ -31,8 +33,23 @@ const useStyles = makeStyles((theme) => ({
    },
 }));
 
-export default function SignIn() {
+const SignIn = (props) => {
    const classes = useStyles();
+   const [form, setForm] = useState({
+      username: "",
+      password: "",
+   });
+
+   const changeHandler = (e) => {
+      console.log(e.target.name, e.target.value);
+      setForm({ ...form, [e.target.name]: e.target.value });
+   };
+
+   const submitHandler = (e) => {
+      e.preventDefault();
+   };
+
+   console.log(props);
 
    return (
       <div className={classes.paper}>
@@ -40,9 +57,9 @@ export default function SignIn() {
             <LockOutlinedIcon />
          </Avatar>
          <Typography component="h1" variant="h5">
-            Войти
+            Войти в систему
          </Typography>
-         <form className={classes.form} noValidate>
+         <form className={classes.form} noValidate onSubmit={submitHandler}>
             <TextField
                variant="outlined"
                margin="normal"
@@ -53,6 +70,8 @@ export default function SignIn() {
                name="username"
                autoComplete="username"
                autoFocus
+               value={props.username}
+               onChange={changeHandler}
             />
             <TextField
                variant="outlined"
@@ -64,6 +83,8 @@ export default function SignIn() {
                type="password"
                id="password"
                autoComplete="current-password"
+               value={props.password}
+               onChange={changeHandler}
             />
             <FormControlLabel
                control={<Checkbox value="remember" color="primary" />}
@@ -75,10 +96,26 @@ export default function SignIn() {
                variant="contained"
                color="primary"
                className={classes.submit}
+               onClick={props.fetchLogin}
             >
                Войти
             </Button>
          </form>
       </div>
    );
+};
+
+function mapStateToprops(state) {
+   return {
+      username: state.username,
+      password: state.password,
+   };
 }
+
+function mapDispatchToProps(dispatch) {
+   return {
+      fetchLogin: () => dispatch(fetchLogin()),
+   };
+}
+
+export default connect(mapStateToprops, mapDispatchToProps)(SignIn);
