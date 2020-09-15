@@ -1,6 +1,6 @@
-import loginReducer from "./login";
 import { combineReducers } from "redux";
+import authReducer from "./auth";
 
 export default combineReducers({
-   quiz: loginReducer,
+   auth: authReducer,
 });

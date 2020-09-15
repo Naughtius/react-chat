@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -7,6 +7,7 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import SignUp from "../components/SignUp";
 import SignIn from "../components/SignIn";
+import { AuthContext } from "../context/AuthContext";
 
 function TabPanel(props) {
    const { children, value, index, ...other } = props;
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const AuthPage = () => {
+	const auth = useContext(AuthContext);
    const classes = useStyles();
    const [value, setValue] = React.useState(0);
 

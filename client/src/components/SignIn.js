@@ -8,7 +8,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import { fetchLogin } from "../store/actions/login";
+import { auth } from "../store/actions/auth";
 
 const useStyles = makeStyles((theme) => ({
    paper: {
@@ -34,22 +34,62 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = (props) => {
-   const classes = useStyles();
+	const classes = useStyles();
    const [form, setForm] = useState({
-      username: "",
-      password: "",
+      formControls: {
+         username: {
+            value: "",
+            type: "username",
+            label: "Username",
+            errorMessage: "Введите что нибудь!",
+         },
+         password: {
+            value: "",
+            type: "password",
+            label: "Password",
+            errorMessage: "Введите корректный пароль",
+         },
+      },
    });
 
-   const changeHandler = (e) => {
-      console.log(e.target.name, e.target.value);
-      setForm({ ...form, [e.target.name]: e.target.value });
-   };
-
-   const submitHandler = (e) => {
+   const authHanler = (e) => {
       e.preventDefault();
+      props.auth(
+			null,
+         form.formControls.username.value,
+			form.formControls.password.value,
+			true
+		);
    };
 
-   console.log(props);
+   const changeHandler = async (e, item) => {
+      const formControls = { ...form.formControls };
+      const inputItem = formControls[item];
+      inputItem.value = e.target.value;
+		setForm({ formControls });
+   };
+
+   const renderInputs = () => {
+      return Object.keys(form.formControls).map((item, index) => {
+         const { label, value, type } = form.formControls[item];
+
+         return (
+            <TextField
+               key={index}
+               variant="outlined"
+               margin="normal"
+               required
+               fullWidth
+               id={type}
+               label={label}
+               name={type}
+               autoFocus
+               value={value}
+               onChange={(e) => changeHandler(e, item)}
+            />
+         );
+      });
+   };
 
    return (
       <div className={classes.paper}>
@@ -59,33 +99,9 @@ const SignIn = (props) => {
          <Typography component="h1" variant="h5">
             Войти в систему
          </Typography>
-         <form className={classes.form} noValidate onSubmit={submitHandler}>
-            <TextField
-               variant="outlined"
-               margin="normal"
-               required
-               fullWidth
-               id="username"
-               label="Username"
-               name="username"
-               autoComplete="username"
-               autoFocus
-               value={props.username}
-               onChange={changeHandler}
-            />
-            <TextField
-               variant="outlined"
-               margin="normal"
-               required
-               fullWidth
-               name="password"
-               label="Password"
-               type="password"
-               id="password"
-               autoComplete="current-password"
-               value={props.password}
-               onChange={changeHandler}
-            />
+         <form className={classes.form} noValidate onSubmit={authHanler}>
+            {renderInputs()}
+
             <FormControlLabel
                control={<Checkbox value="remember" color="primary" />}
                label="Remember me"
@@ -96,7 +112,7 @@ const SignIn = (props) => {
                variant="contained"
                color="primary"
                className={classes.submit}
-               onClick={props.fetchLogin}
+               onClick={authHanler}
             >
                Войти
             </Button>
@@ -105,17 +121,11 @@ const SignIn = (props) => {
    );
 };
 
-function mapStateToprops(state) {
-   return {
-      username: state.username,
-      password: state.password,
-   };
-}
-
 function mapDispatchToProps(dispatch) {
    return {
-      fetchLogin: () => dispatch(fetchLogin()),
+      auth: (name, username, password, isLogin) =>
+         dispatch(auth(name, username, password, isLogin)),
    };
 }
 
-export default connect(mapStateToprops, mapDispatchToProps)(SignIn);
+export default connect(null, mapDispatchToProps)(SignIn);
